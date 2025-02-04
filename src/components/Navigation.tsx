@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { UserButton } from '@clerk/nextjs';
+import Link from 'next/link';
 
 
 
@@ -13,7 +14,7 @@ const Navigation = () => {
       <div className="flex items-center justify-between p-4">
         
         <div className='flex'>
-        <p className=" text-lg font-bold">Efficio⚡</p>
+        <Link href={'/'}><p className=" text-lg font-bold">Efficio⚡</p></Link>
        
         </div>
        
