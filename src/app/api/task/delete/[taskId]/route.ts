@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import Task from "@/lib/modals/task.modal";
+import Task from "@/lib/modals/task.modal";  
 import { connect } from "@/lib/dbConnect";  
 
-export async function DELETE(req: NextRequest, { params }: { params: { taskId: string } }) {
+export async function DELETE(req: NextRequest) {
   try {
     await connect();
 
-    const { taskId } = params;
+    const taskId = req.nextUrl.pathname.split("/").pop(); 
 
     if (!taskId) {
       return NextResponse.json({ message: "Task ID is required" }, { status: 400 });
     }
-
 
     const deletedTask = await Task.findByIdAndDelete(taskId);
 
