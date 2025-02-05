@@ -1,8 +1,8 @@
 "use client";
-import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden"; // Import VisuallyHidden
-import { useState } from "react";
+import { Loader2Icon } from "lucide-react";
 
 interface Task {
   _id: string;
@@ -12,108 +12,120 @@ interface Task {
   status: string;
 }
 
-const TaskUpdateModal = ({ task }: { task: Task }) => {
-  const [open, setOpen] = useState(true);
+interface TaskUpdateModalProps {
+  task: Task;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  refreshTasks: () => void;
+}
+
+export default function TaskUpdateModal({ task, open, setOpen , refreshTasks }: TaskUpdateModalProps) {
   const [formData, setFormData] = useState({
     title: task.title,
-    description: task.description,
+    description: task.description || "",
     dueDate: task.dueDate,
     status: task.status,
   });
+   
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        title: task.title,
+        description: task.description || "",
+        dueDate: task.dueDate,
+        status: task.status,
+      });
+    }
+  }, [open, task]);
+
+  // Handles input & textarea changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const closeModal = () => {
-    setOpen(false);
+  // Handles select dropdown changes
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`/api/task/update/${task._id}`, {
         method: "PUT",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          dueDate: new Date(formData.dueDate).toISOString(), 
+        }),
       });
-      if (!res.ok) throw new Error("Failed to update task");
-      closeModal(); // Close modal on success
+  
+      const data = await res.json();
+      console.log("Response Data:", data);
+  
+      if (res.ok && data.success) {
+        refreshTasks();
+        setOpen(false); 
+      } else {
+        console.error("Failed to update task:", data);
+      }
     } catch (error) {
       console.error("Error updating task:", error);
+    } finally{
+      setLoading(true);
     }
   };
 
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent aria-labelledby="task-update-modal-title" aria-describedby="task-update-modal-description">
-        {/* If you want to hide the title visually but keep it accessible */}
-        <VisuallyHidden>
-          <DialogTitle id="task-update-modal-title">Update Task</DialogTitle>
-        </VisuallyHidden>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded-md shadow-lg w-96">
+        <h3 className="text-lg font-semibold mb-4">Edit Task</h3>
 
-        <p id="task-update-modal-description">Edit the task details below.</p>
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleInputChange}
+          placeholder="Task Title"
+          className="w-full p-2 border rounded-md mb-3"
+        />
 
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="title">Task Title</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="description">Description</label>
-            <input
-              type="text"
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="dueDate">Due Date</label>
-            <input
-              type="date"
-              id="dueDate"
-              name="dueDate"
-              value={formData.dueDate}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label htmlFor="status">Status</label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-            >
-              <option value="pending">Pending</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleInputChange}
+          placeholder="Task Description"
+          className="w-full p-2 border rounded-md mb-3"
+        />
 
-          <DialogClose asChild>
-            <Button type="submit">Save Changes</Button>
-          </DialogClose>
-          <DialogClose asChild>
-            <Button type="button">Cancel</Button>
-          </DialogClose>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <input
+          type="date"
+          name="dueDate"
+          value={formData.dueDate}
+          onChange={handleInputChange}
+          className="w-full p-2 border rounded-md mb-3"
+        />
+
+        <select
+          name="status"
+          value={formData.status}
+          onChange={handleSelectChange}
+          className="w-full p-2 border rounded-md mb-4"
+        >
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+
+        <div className="flex justify-end gap-2">
+          <Button onClick={handleSave} className="bg-blue-500 flex justify-center items-center text-white">{loading ? <Loader2Icon className="animate-spin"/> : <p>Save</p>} </Button>
+          <Button onClick={() => setOpen(false)} className="bg-gray-400 text-white">Cancel</Button>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default TaskUpdateModal;
+}

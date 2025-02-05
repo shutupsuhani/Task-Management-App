@@ -4,7 +4,10 @@ import React from "react";
 import TaskModal from "./components/TaskModal";
 import TaskList from "./components/TaskList";
 
+
 const Page = () => {
+  
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navigation Bar */}

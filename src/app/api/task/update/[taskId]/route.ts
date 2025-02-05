@@ -3,15 +3,14 @@ import Task from "@/lib/modals/task.modal";
 import { connect } from "@/lib/dbConnect";
 
 export async function PUT(req: NextRequest, { params }: { params: { taskId: string } }) {
-  const { taskId } = await params;
+  const  {taskId}  = params; 
 
   try {
     await connect();
-
     const { title, description, dueDate, status } = await req.json();
 
-    if (!title || !dueDate) {
-      return NextResponse.json({ message: "Title and Due Date are required" }, { status: 400 });
+    if (!taskId || !title || !dueDate) {
+      return NextResponse.json({ message: "Invalid request" }, { status: 400 });
     }
 
     const updatedTask = await Task.findByIdAndUpdate(
@@ -24,7 +23,7 @@ export async function PUT(req: NextRequest, { params }: { params: { taskId: stri
       return NextResponse.json({ message: "Task not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ task: updatedTask });
+    return NextResponse.json({ success: true, task: updatedTask });
   } catch (error) {
     console.error("Error updating task:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });

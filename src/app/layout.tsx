@@ -36,7 +36,6 @@ export default function RootLayout({
             
           </SignedIn>
           
-          {/* Render children (rest of the app) */}
           {children}
         </body>
       </html>
