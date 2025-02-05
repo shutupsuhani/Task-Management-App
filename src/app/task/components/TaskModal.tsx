@@ -33,7 +33,7 @@ export default function TaskModal() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/task/create", {
+      const res = await fetch("https://task-management-app-y9ga.vercel.app/api/task/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -24,7 +24,7 @@ export default function TaskList() {
   const refreshTasks = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/task/get");
+      const res = await fetch("https://task-management-app-y9ga.vercel.app/api/task/get");
       if (!res.ok) throw new Error("Failed to fetch tasks");
 
       const data = await res.json();
@@ -55,7 +55,7 @@ export default function TaskList() {
 
   const deleteTask = async (taskId: string) => {
     try {
-      const res = await fetch(`/api/task/delete/${taskId}`, {
+      const res = await fetch(`https://task-management-app-y9ga.vercel.app/api/task/delete/${taskId}`, {
         method: "DELETE",
       });
 
