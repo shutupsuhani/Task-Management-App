@@ -53,7 +53,7 @@ export default function TaskUpdateModal({ task, open, setOpen , refreshTasks }: 
   const handleSave = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`https://task-management-app-y9ga.vercel.app/api/task/update/${task._id}`, {
+      const res = await fetch(`/api/task/update/${task._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
