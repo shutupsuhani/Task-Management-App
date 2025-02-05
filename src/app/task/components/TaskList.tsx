@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTaskStore } from "@/store/useTaskStore";
 import { Button } from "@/components/ui/button";
-import { Loader2Icon, Trash2Icon } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import TaskUpdateModal from "./TaskUpdateModal";
 
 interface Task {
@@ -11,7 +11,7 @@ interface Task {
   title: string;
   description: string;
   dueDate: string;
-  status: string;
+  status: string;  
 }
 
 export default function TaskList() {
@@ -22,27 +22,35 @@ export default function TaskList() {
 
   // ✅ Function to refresh tasks
   const refreshTasks = async () => {
-    setLoading(true);  // Start loading before fetch
+    setLoading(true);
     try {
-      console.log("Refreshing tasks...");
       const res = await fetch("/api/task/get");
       if (!res.ok) throw new Error("Failed to fetch tasks");
-
+  
       const data = await res.json();
-      console.log("Updated tasks:", data);
-      setTasks(data.tasks);
+      const tasksWithStatus = data.tasks.map((task: any) => ({
+        ...task,
+        status: task.status || "pending", // Add a default status if it's missing
+      }));
+      setTasks(tasksWithStatus);
     } catch (error) {
       console.error("Error refreshing tasks:", error);
     } finally {
-      setLoading(false);  // End loading after fetch is complete
+      setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     refreshTasks();  // Fetch tasks initially
   }, [setTasks]);
 
   const openUpdateModal = (task: Task) => {
+    
+    if (!task.status) {
+      task.status = "pending"; // Fallback if status is missing
+    }
+
     setSelectedTask(task);
     setIsModalOpen(true);
   };
@@ -66,32 +74,34 @@ export default function TaskList() {
     }
   };
 
+  if (loading) {
+    return <Loader2Icon className="animate-spin" />;
+  }
+
+  if (tasks.length === 0) {
+    return <p>No tasks found.</p>;
+  }
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Your Tasks</h2>
-      {loading ? (
-        <Loader2Icon className="animate-spin" />  
-      ) : tasks.length === 0 ? (
-        <p>No tasks found.</p>
-      ) : (
-        <div>
-          {tasks.map((task) => (
-            <div key={task._id} className="flex items-center justify-between p-4 mb-4 bg-white shadow-md rounded-md">
-              <div>
-                <strong>{task.title}</strong> - Due: {new Date(task.dueDate).toLocaleDateString()}
-              </div>
-              <div>
-                <Button onClick={() => openUpdateModal(task)} className="ml-4">
-                  Edit
-                </Button>
-                <Button onClick={() => deleteTask(task._id)} className="ml-4 bg-red-500 text-white">
-                  <Trash2Icon/>
-                </Button>
-              </div>
+      <ul>
+        {tasks.map((task) => (
+          <li key={task._id} className="flex items-center justify-between p-4 mb-4 bg-white shadow-md rounded-md">
+            <div>
+              <strong>{task.title}</strong> - Due: {new Date(task.dueDate).toLocaleDateString()}
             </div>
-          ))}
-        </div>
-      )}
+            <div>
+              <Button onClick={() => openUpdateModal(task as Task)} className="ml-4">
+                Edit
+              </Button>
+              <Button onClick={() => deleteTask(task._id)} className="ml-4 bg-red-500 text-white">
+                Delete
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
 
       {/* Task Update Modal */}
       {selectedTask && (
