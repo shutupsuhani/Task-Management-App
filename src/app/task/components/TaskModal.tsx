@@ -17,14 +17,16 @@ export default function TaskModal() {
     description: "",
     dueDate: "",
   });
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
   };
 
   const handleSubmit = async () => {
     if (!formData.title || !formData.dueDate) {
-      alert("Title and Due Date are required!");
+      setError("Title and Due Date are required!");
       return;
     }
     
@@ -44,7 +46,9 @@ export default function TaskModal() {
       setLoading(false);
       setOpen(false);
     } catch (error) {
+      setError("There was an error creating your task.");
       console.error("Task creation error:", error);
+    
     }
   };
 
@@ -62,6 +66,9 @@ export default function TaskModal() {
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Create a Task</DialogTitle>
+       
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        
         <Input name="title" placeholder="Task Title" onChange={handleChange} />
         <Textarea name="description" placeholder="Task Description" onChange={handleChange} />
         <Input type="date" name="dueDate" onChange={handleChange} />

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTaskStore } from "@/store/useTaskStore";
 import { Button } from "@/components/ui/button";
-import { Loader2Icon } from "lucide-react";
+import { Edit2Icon, Loader2Icon, Trash2Icon } from "lucide-react";
 import TaskUpdateModal from "./TaskUpdateModal";
 
 interface Task {
@@ -11,7 +11,7 @@ interface Task {
   title: string;
   description: string;
   dueDate: string;
-  status: string;  
+  status: string;
 }
 
 export default function TaskList() {
@@ -26,7 +26,7 @@ export default function TaskList() {
     try {
       const res = await fetch("/api/task/get");
       if (!res.ok) throw new Error("Failed to fetch tasks");
-  
+
       const data = await res.json();
       const tasksWithStatus = data.tasks.map((task: any) => ({
         ...task,
@@ -39,14 +39,12 @@ export default function TaskList() {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     refreshTasks();  // Fetch tasks initially
   }, [setTasks]);
 
   const openUpdateModal = (task: Task) => {
-    
     if (!task.status) {
       task.status = "pending"; // Fallback if status is missing
     }
@@ -75,33 +73,47 @@ export default function TaskList() {
   };
 
   if (loading) {
-    return <Loader2Icon className="animate-spin" />;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2Icon className="animate-spin text-gray-500" size={48} />
+      </div>
+    );
   }
 
   if (tasks.length === 0) {
-    return <p>No tasks found.</p>;
+    return <p className="text-center text-gray-700">No tasks found.</p>;
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Your Tasks</h2>
-      <ul>
+    <div className="px-4 py-8 sm:px-6 md:px-8">
+      <h2 className="text-xl font-semibold text-primary mb-4">Your Tasks</h2>
+      <div className="space-y-4">
         {tasks.map((task) => (
-          <li key={task._id} className="flex items-center justify-between p-4 mb-4 bg-white shadow-md rounded-md">
-            <div>
-              <strong>{task.title}</strong> - Due: {new Date(task.dueDate).toLocaleDateString()}
+          <div
+            key={task._id}
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 mb-4 bg-white shadow-md rounded-md"
+          >
+            <div className="flex-1">
+              <strong>{task.title}</strong> - Due-Date:{" "}
+              {new Date(task.dueDate).toLocaleDateString()}
             </div>
-            <div>
-              <Button onClick={() => openUpdateModal(task as Task)} className="ml-4">
-                Edit
+            <div className="flex gap-2 mt-2 sm:mt-0">
+              <Button
+                onClick={() => openUpdateModal(task as Task)}
+                className="flex items-center justify-center p-2 bg-blue-500 text-white rounded-md"
+              >
+                <Edit2Icon className="w-4 h-4" />
               </Button>
-              <Button onClick={() => deleteTask(task._id)} className="ml-4 bg-red-500 text-white">
-                Delete
+              <Button
+                onClick={() => deleteTask(task._id)}
+                className="flex items-center justify-center p-2 bg-red-500 text-white rounded-md"
+              >
+                <Trash2Icon className="w-4 h-4" />
               </Button>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
 
       {/* Task Update Modal */}
       {selectedTask && (

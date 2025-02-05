@@ -16,13 +16,15 @@ export async function POST(req: NextRequest) {
 
     if (!title || !dueDate) {
       return NextResponse.json({ message: "Title and Due Date are required" }, { status: 400 });
-    }
+    } 
+
+
 
     const newTask = new Task({
       title,
       description,
       userId,
-      dueDate: new Date(dueDate), 
+      dueDate: new Date(dueDate).toISOString(), 
     });
 
     await newTask.save();
