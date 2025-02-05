@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import Task from "@/lib/modals/task.modal";
 import { connect } from "@/lib/dbConnect";
 
-export async function PUT(req: NextRequest, { params }: { params: { taskId: string } }) {
-  const  {taskId}  = params; 
-
+export async function PUT(req: NextRequest) {
+  
   try {
     await connect();
+    const taskId = req.nextUrl.pathname.split("/").pop(); 
     const { title, description, dueDate, status } = await req.json();
 
     if (!taskId || !title || !dueDate) {
