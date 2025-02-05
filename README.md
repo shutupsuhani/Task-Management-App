@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Task Management App
+--
+A modern Task Management Application built with Next.js, TypeScript, and Zustand for state management. This web application allows users to efficiently manage tasks by adding, updating, and deleting them with real-time data syncing. It also provides a responsive design for a seamless experience on desktop, tablet, and mobile devices.
 
-## Getting Started
+Key Features
 
-First, run the development server:
+Task Management: Create, edit, delete, and view tasks.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Responsive Design: Fully responsive layout optimized for desktop, tablet, and mobile views.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Real-Time Updates: Tasks automatically refresh after any change (add, update, delete).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Modern UI: Clean and user-friendly interface with intuitive interactions.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Loading State: Visual loading state to indicate when tasks are being fetched or modified.
 
-## Learn More
+Error Handling: User-friendly error messages when actions fail.
 
-To learn more about Next.js, take a look at the following resources:
+Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Frontend:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Next.js (React framework for server-side rendering)
+TypeScript (for type safety and improved developer experience)
+Tailwind CSS (utility-first CSS framework for styling)
+Lucide React Icons (for intuitive UI icons)
+Zustand (state management library for efficient task state handling)
+Backend:
 
-## Deploy on Vercel
+REST API built with Next.js API Routes (provides endpoints to create, fetch, update, and delete tasks)
+Deployed to Vercel (for both frontend and backend hosting)
+Deployment:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vercel (for serverless deployment)
+API hosted on Vercel for seamless integration with the frontend
